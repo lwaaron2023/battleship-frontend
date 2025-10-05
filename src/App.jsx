@@ -31,7 +31,16 @@ function App() {
     }
 
     const initializeConnection = () =>{
-        setWs([new WebSocket( 'ws://127.0.0.1:3000/ws' )])
+        const loc = window.location.origin;
+        console.log(loc);
+        let url = ""
+        if(loc.startsWith("http")){
+            url=`ws${loc.substring(loc.indexOf("http") + 4, loc.length)}/ws`;
+        }
+        else if(loc.startsWith("https")){
+            url=`wss${loc.substring(loc.indexOf("http") + 5, loc.length)}/ws`;
+        }
+        setWs([new WebSocket( url )])
     }
 
     useEffect(() => {
@@ -176,24 +185,25 @@ function App() {
     }
   return (
     <>
-
-        <div className = "min-h-fit max-h-min min-w-fit max-w-fit justify-self-center m-10 p-10 bg-gray-300" id={"game"}>
-            <div>
-                <p className={"p-2 text-center  text-4xl"} id={"message"}></p>
+        <div className={"bg-gray-800 min-w-max min-h-max p-4"}>
+            <div className = "min-h-fit max-h-min min-w-fit max-w-fit justify-self-center m-10 p-10 bg-gray-300" id={"game"}>
+                <div>
+                    <p className={"p-2 text-center  text-4xl"} id={"message"}></p>
+                </div>
+                <div className={"hidden min-h-fit min-w-fit m-4 p-4 border-2 rounded-xl"} id={"playfield"}>
+                    <h1 className={"text-4xl font-bold text-center mb-5"} style={{"color":attacking?"yellow":"blue"}}>{attacking?"Your Turn":"Opponent's Turn"}</h1>
+                    <h1 className={"text-4xl text-center font-bold mb-5 text-gray-800"}>Playfield</h1>
+                    <Playgrid id={playGridId} cols={cols} rows={rows} size={size} playmode={playMode} extractInfo={extractInfo} attacking={attacking} attack={attack} waitingForReply={waitingForReply}/>
+                </div>
+                <div className={"min-h-fit min-w-fit m-4 p-4 border-2 rounded-xl"}>
+                    <h1 className={"text-4xl text-center font-bold mb-5 text-gray-800"}>Your Ship Placement</h1>
+                    <Placegrid id={placeGridId} cols={cols} rows={rows} size={size} cb={setPlayMode} extractInfo={extractInfo}/>
+                </div>
             </div>
-            <div className={"hidden min-h-fit min-w-fit m-4 p-4 border-2 rounded-xl"} id={"playfield"}>
-                <h1 className={"text-4xl font-bold text-center mb-5"} style={{"color":attacking?"yellow":"blue"}}>{attacking?"Your Turn":"Opponent's Turn"}</h1>
-                <h1 className={"text-4xl text-center font-bold mb-5 text-gray-800"}>Playfield</h1>
-                <Playgrid id={playGridId} cols={cols} rows={rows} size={size} playmode={playMode} extractInfo={extractInfo} attacking={attacking} attack={attack} waitingForReply={waitingForReply}/>
+            <div className = "hidden min-h-fit min-w-fit m-4 p-4 border-2 rounded-xl bg-gray-300 flex-cols justify-center align-center" id={"post-game"} style={{"width":"50%","justifySelf":"center","marginTop":"5rem"}}>
+                <p className={"p-2 text-center  text-4xl mb-2"} id={"post-game-message"}></p>
+                <button type={"button"} className={"text-center text-4xl text-blue-200 hover:text-blue-500 p-4 border-2 border-black rounded-xl bg-neutral-700"} style={{"width":"100%"}} onClick={()=>{window.location.reload()}}>Play Again?</button>
             </div>
-            <div className={"min-h-fit min-w-fit m-4 p-4 border-2 rounded-xl"}>
-                <h1 className={"text-4xl text-center font-bold mb-5 text-gray-800"}>Your Ship Placement</h1>
-                <Placegrid id={placeGridId} cols={cols} rows={rows} size={size} cb={setPlayMode} extractInfo={extractInfo}/>
-            </div>
-        </div>
-        <div className = "hidden min-h-fit min-w-fit m-4 p-4 border-2 rounded-xl bg-gray-300 flex-cols justify-center align-center" id={"post-game"} style={{"width":"50%","justifySelf":"center","marginTop":"5rem"}}>
-            <p className={"p-2 text-center  text-4xl mb-2"} id={"post-game-message"}></p>
-            <button type={"button"} className={"text-center text-4xl text-blue-200 hover:text-blue-500 p-4 border-2 border-black rounded-xl bg-neutral-700"} style={{"width":"100%"}} onClick={()=>{window.location.reload()}}>Play Again?</button>
         </div>
     </>
   )
