@@ -45,7 +45,7 @@ const Placegrid = (props) => {
     )
 
 
-    window.onload = () => {
+    React.useEffect(() => {
         const rowValues = [];
         const numRows = props.rows;
         const numCols = props.cols;
@@ -56,7 +56,7 @@ const Placegrid = (props) => {
         setRows(rowValues);
         //allows dynamic columns
         setZoom(Math.round(window.devicePixelRatio * 100));
-    }
+    },[])
 
     const handleRotate = (e)=>{
         direction=!direction;
